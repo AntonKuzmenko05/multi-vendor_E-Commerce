@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from "cors";
 import {errorMiddleware} from "../../../packages/erorr-handler/error-middleware";
+import cookieParser = require("cookie-parser");
 
 // const host = process.env.HOST ?? 'localhost';
 // const port = process.env.PORT ? Number(process.env.PORT) : 6001;
@@ -11,7 +12,8 @@ app.use(cors({
   allowedHeaders:['Authorization', "Content-Type"],
   credentials:true,
 }))
-
+app.use(express.json())
+app.use(cookieParser())
 app.use(errorMiddleware)
 
 app.get('/', (req, res) => {
