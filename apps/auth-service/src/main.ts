@@ -8,23 +8,23 @@ import cookieParser = require("cookie-parser");
 
 const app = express();
 app.use(cors({
-  origin:["http://localhost:3000"],
-  allowedHeaders:['Authorization', "Content-Type"],
-  credentials:true,
+    origin: ["http://localhost:3000"],
+    allowedHeaders: ['Authorization', "Content-Type"],
+    credentials: true,
 }))
 app.use(express.json())
 app.use(cookieParser())
 app.use(errorMiddleware)
 
 app.get('/', (req, res) => {
-    res.send({ 'message': 'Hello API'});
+    res.send({'message': 'Hello API'});
 });
 const port = process.env.PORT || 6001;
 const server = app.listen(port, () => {
-  console.log(`[ ready ] Auth-Service on http://localhost:${port}`);
+    console.log(`[ ready ] Auth-Service on http://localhost:${port}`);
 });
 
-server.on("error", err=>{
-  console.log("Server error in Auth-Service api", err)
+server.on("error", err => {
+    console.log("Server error in Auth-Service api", err)
 })
 
