@@ -2,9 +2,11 @@
   "name": "@e-shop/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {
-    "dev": "npx nx run-many --target=serve -all"
-  },
+    "scripts": {
+        "prisma:generate": "prisma generate",
+        "dev": "npm run prisma:generate && nx run-many --target=serve --all",
+        "postinstall": "prisma generate"
+    },
   "private": true,
   "dependencies": {
     "@prisma/client": "6.19",
