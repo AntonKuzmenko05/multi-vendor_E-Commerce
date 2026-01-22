@@ -5,13 +5,17 @@
     "types": [
       "jest",
       "node"
-    ]
+    ],
+      "paths": {
+          "@prisma/client": ["../../generated/prisma/client"]
+      }
   },
   "include": [
     "jest.config.ts",
     "src/**/*.test.ts",
     "src/**/*.spec.ts",
-    "src/**/*.d.ts"
+    "src/**/*.d.ts",
+      "../../../generated/prisma/**/*.ts"
   ],
   "references": [
     {

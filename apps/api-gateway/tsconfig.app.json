@@ -6,11 +6,15 @@
       "node",
       "express"
     ],
+      "paths": {
+          "@prisma/client": ["../../generated/prisma/client"]
+      },
     "rootDir": "src",
     "tsBuildInfoFile": "dist/tsconfig.app.tsbuildinfo"
   },
   "include": [
-    "src/**/*.ts"
+    "src/**/*.ts",
+      "../../../generated/prisma/**/*.ts"
   ],
   "exclude": []
 }

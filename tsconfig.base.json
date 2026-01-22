@@ -18,7 +18,7 @@
         "target": "es2022",
         "baseUrl": ".",
         "paths": {
-            "@prisma/client": ["./generated/prisma/index"]
+            "@prisma/client": ["./generated/prisma/client"]
         }
     }
 }
