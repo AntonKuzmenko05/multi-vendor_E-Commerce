@@ -1,3 +1,5 @@
+//Needed to be added Singelton and !== production
+
 import {PrismaClient} from "@prisma/client"
 
 declare global{
