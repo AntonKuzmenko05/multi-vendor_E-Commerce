@@ -1,7 +1,7 @@
-import {ValidationError} from "../../../../packages/erorr-handler";
+import {ValidationError} from "@packages/erorr-handler";
 import {NextFunction} from "express";
 import * as crypto from "node:crypto";
-import redis from "../../../../packages/redis";
+import redis from "@packages/redis";
 import {sendEmail} from "./sendMail";
 import Redis from "../../../../packages/redis";
 import {afterEach} from "node:test";
