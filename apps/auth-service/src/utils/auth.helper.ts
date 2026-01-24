@@ -17,7 +17,7 @@ export const validateRegistrationData = (data: any, userType: "user" | "seller")
         throw new ValidationError("Missing required fields");
     }
 
-    if (emailRegex.test(email)) {
+    if (!emailRegex.test(email)) {
         throw new ValidationError("Invalid email format")
     }
 }
