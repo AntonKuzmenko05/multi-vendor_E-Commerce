@@ -2,11 +2,11 @@
   "name": "@e-shop/source",
   "version": "0.0.0",
   "license": "MIT",
-    "scripts": {
-        "prisma:generate": "prisma generate",
-        "dev": "npm run prisma:generate && nx run-many --target=serve --all",
-        "postinstall": "prisma generate"
-    },
+  "scripts": {
+    "prisma:generate": "prisma generate",
+    "dev": "npm run prisma:generate && nx run-many --target=serve --all",
+    "postinstall": "prisma generate"
+  },
   "private": true,
   "dependencies": {
     "@prisma/client": "6.19",
@@ -21,6 +21,7 @@
     "morgan": "^1.10.1",
     "nodemailer": "^7.0.12",
     "prisma": "6.19",
+    "swagger-autogen": "^2.23.7",
     "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
