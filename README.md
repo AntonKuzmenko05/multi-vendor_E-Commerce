@@ -80,3 +80,32 @@ And join the Nx community:
 - [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
 - [Our Youtube channel](https://www.youtube.com/@nxdevtools)
 - [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+
+
+
+What i learned:
+
+- upstash redis(many things actually)
+- rate limitting
+- prisma, prisma client
+- .prisma bug
+- nx - nx conf, nx servises, nx core, nx cache 
+- ejs
+-  tsconfigs + alias
+-  github ci
+-  otp realisation
+-  swagger documentation
+-  some more technics in error handle
+-  email sending via node
+-  proxy in express
+-  versioning in npm
+-  git:
+      - git stash
+      - вливання гілки
+      - сценарії об'єдання
+      - git pull --ff-only
+      - ahead and behind situation
+
+What want to add
+gRPC 
+TODO in project
