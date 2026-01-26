@@ -7,6 +7,7 @@ import {
     verifyOtp
 } from "../utils/auth.helper";
 import prisma from "@packages/libs/prisma";
+import bcrypt from "bcryptjs"
 import {ValidationError} from "@packages/erorr-handler";
 
 //Register new user
@@ -69,7 +70,16 @@ export const verifyUser = async (
 
     await verifyOtp(email, otp, next);
 
+    const hashedPassword = await bcrypt.hash(password, 10)
 
+    await prisma.users.create({
+        data:{name, email, password: hashedPassword}
+    })
+
+     res.status(201).json({
+         success: true,
+         message:"User registered successfully!"
+     })
 
     } catch (e) {
         next(e)
