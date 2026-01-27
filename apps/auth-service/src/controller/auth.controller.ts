@@ -8,7 +8,10 @@ import {
 } from "../utils/auth.helper";
 import prisma from "@packages/libs/prisma";
 import bcrypt from "bcryptjs"
-import {ValidationError} from "@packages/erorr-handler";
+import {AuthError, ValidationError} from "@packages/erorr-handler";
+import jwt from "jsonwebtoken"
+import * as process from "node:process";
+import {setCookie} from "../utils/cookies/setCookie";
 
 //Register new user
 export const userRegistration = async (
@@ -17,7 +20,6 @@ export const userRegistration = async (
     next: NextFunction
 ) => {
     try {
-
 
         validateRegistrationData(req.body, "user")
         const {name, email} = req.body;
@@ -44,6 +46,7 @@ export const userRegistration = async (
         res.status(200).json({
             message: "OTP sent to your email. Please verify"
         })
+        //TODO add cookie
     }catch (e) {
         return next(e)
     }
@@ -59,7 +62,7 @@ export const verifyUser = async (
         const {email, otp, password, name} = req.body;
 
     if(!email || !otp || !password || !name){
-        next(new ValidationError("All fields are required!"))
+        return next(new ValidationError("All fields are required!"))
     }
 
     const existingUser = await prisma.users.findUnique({where: {email}});
@@ -82,6 +85,53 @@ export const verifyUser = async (
      })
 
     } catch (e) {
-        next(e)
+       return next(e)
+    }
+}
+
+export const loginUser = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) =>{
+    try {
+        const {email, password} = req.body;
+
+        if(!email || !password){
+            return next(new ValidationError("Email and password are required!"))
+        }
+        const user = await prisma.users.findUnique({where: {email}})
+
+        if(!user) return next(new AuthError("User doesn't exists!"))
+
+        //verify email
+        const isPasswordMatch = await bcrypt.compare(password, user.password!)
+        if(!isPasswordMatch){
+            return next(new AuthError("Invalid password or email"))
+        }
+
+        //Generate access and refresh token
+        const accessToken = jwt.sign({id:user.id, role:"user"}, process.env.ACCESS_TOKET_SECRET as string,
+            {
+                expiresIn:"15m"
+            }
+        )
+
+        const refreshToken = jwt.sign({id:user.id, role:"user"}, process.env.REFRESH_TOKET_SECRET as string,
+            {
+                expiresIn:"7d"
+            }
+        )
+        //store tokens
+        setCookie(res, "refresh_token", refreshToken);
+        setCookie(res, "access_token", accessToken);
+
+        res.json({
+            message:"Login successful!",
+            user:{id:user.id, email:user.email, name:user.name}
+        });
+
+    } catch (e) {
+        return next(e)
     }
 }
