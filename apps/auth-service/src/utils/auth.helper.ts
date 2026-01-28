@@ -1,10 +1,11 @@
 import {ValidationError} from "@packages/erorr-handler";
-import {NextFunction} from "express";
+import {NextFunction, Request, Response} from "express";
 import * as crypto from "node:crypto";
 import redis from "@packages/redis";
 import {sendEmail} from "./sendMail";
 import Redis from "../../../../packages/redis";
 import {afterEach} from "node:test";
+import prisma from "@packages/libs/prisma";
 
 const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
@@ -34,7 +35,7 @@ export const checkOtpRestrictions = async (email: string, next: NextFunction) =>
     }
 }
 
-export const sendOtp = async (name: string, email: string, template: string) => {
+export const sendOtp = async (email: string ,name: string , template: string) => {
     const otp = crypto.randomInt(1000, 9999).toString();
     await sendEmail(email, "Verify Your Email", template, {name, otp});
     await redis.set(`otp:${email}`, otp, "EX", 300)
@@ -79,4 +80,53 @@ export const verifyOtp = async (email:string, otp:string, next:NextFunction)=>{
         ))
     }
     await redis.del(`otp:${email}`, failedAttemptsKey)
+}
+
+export const handleForgotPassword = async(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+    userType: "user" | "seller"
+) =>{
+    try {
+        const {email} = req.body;
+        if (!email) return new ValidationError("Email is required")
+
+        const user = userType === "user" && await prisma.users.findUnique({where:email})
+
+        if(!user) return new ValidationError(`${userType} not found`);
+
+        //Check otp
+        await checkOtpRestrictions(email,next);
+        await trackOtpRequests(email, next);
+
+        //Generate otp and send to email
+        await sendOtp(email, user.name, "forgot-password-user-mail");
+
+        res.status(200).json({message: "OTP sent to email. Please verify your account"})
+    } catch (e) {
+        return next(e)
+    }
+
+
+}
+
+export const verifyForgotPasswordOtp = async(
+    req: Request,
+    res: Response,
+    next: NextFunction
+) =>{
+    try {
+        const {email, otp} = req.body;
+        if (!email || !otp) return new ValidationError("Email is required")
+
+        await verifyOtp(email, otp, next)
+
+        res
+            .status(200)
+            .json({message: "OTP verified. Tou can now rest your password"})
+
+    } catch (e) {
+        return next(e)
+    }
 }
