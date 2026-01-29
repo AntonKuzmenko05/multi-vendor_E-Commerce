@@ -1,27 +1,31 @@
 {
-    "compilerOptions": {
-        "composite": true,
-        "declarationMap": true,
-        "emitDeclarationOnly": true,
-        "importHelpers": true,
-        "isolatedModules": true,
-        "lib": ["es2022"],
-        "module": "nodenext",
-        "moduleResolution": "nodenext",
-        "noEmitOnError": true,
-        "noFallthroughCasesInSwitch": true,
-        "noImplicitOverride": true,
-        "noImplicitReturns": true,
-        "noUnusedLocals": false,
-        "skipLibCheck": true,
-        "strict": true,
-        "target": "es2022",
-        "baseUrl": ".",
-        "paths": {
-            "@prisma/client": ["./generated/prisma/client"],
-            "@packages/*": [
-                "packages/*"
-            ]
-        }
+  "compilerOptions": {
+    "composite": true,
+    "declarationMap": true,
+    "emitDeclarationOnly": true,
+    "importHelpers": true,
+    "isolatedModules": true,
+    "lib": [
+      "es2022"
+    ],
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "noEmitOnError": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": false,
+    "skipLibCheck": true,
+    "strict": true,
+    "target": "es2022",
+    "baseUrl": ".",
+    "paths": {
+      "@packages/*": [
+        "packages/*"
+      ],
+      "@prisma/client": [
+        "./generated/prisma/client"
+      ]
     }
+  }
 }
