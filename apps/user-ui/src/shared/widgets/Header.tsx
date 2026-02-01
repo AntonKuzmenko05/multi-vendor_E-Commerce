@@ -24,21 +24,23 @@ const Header = () => {
                 </div>
                 <div className="flex items-center gap-8">
                     <div className="flex items-center gap-2">
-                        <Link href={"/login"} className="border-2 w-[50px] h-[50px] flex items-center justify-center rounded-full border-[black]">
+                        <Link href={"/login"}
+                              className="border-2 w-[50px] h-[50px] flex items-center justify-center rounded-full border-[black]">
                             <User/>
                         </Link>
 
-                    <Link href={"/login"}>
-                        <span className="block font-medium">Hello, </span>
-                        <span className="font-semibold">
+                        <Link href={"/login"}>
+                            <span className="block font-medium">Hello, </span>
+                            <span className="font-semibold">
                             Sign in
                         </span>
-                    </Link>
+                        </Link>
                     </div>
                     <div className="flex items-center gap-5">
                         <Link href={"/wishlist"} className="relative ">
                             <HeartIcon/>
-                            <div className="w-6 h-6 border-2 border-white bg-red-500 rounded-full flex items-center justify-center absolute top-[-10px] right-[-10px]">
+                            <div
+                                className="w-6 h-6 border-2 border-white bg-red-500 rounded-full flex items-center justify-center absolute top-[-10px] right-[-10px]">
                                 <span className="text-white font-medium text-sm">
                                     0
                                 </span>
@@ -46,7 +48,8 @@ const Header = () => {
                         </Link>
                         <Link href={"/wishlist"} className="relative ">
                             <ShoppingCart/>
-                            <div className="w-6 h-6 border-2 border-white bg-red-500 rounded-full flex items-center justify-center absolute top-[-10px] right-[-10px]">
+                            <div
+                                className="w-6 h-6 border-2 border-white bg-red-500 rounded-full flex items-center justify-center absolute top-[-10px] right-[-10px]">
                                 <span className="text-white font-medium text-sm">
                                     0
                                 </span>
@@ -56,7 +59,7 @@ const Header = () => {
                 </div>
             </div>
             <div className="border-b border-b-slate-200"/>
-                <HeaderBottom/>
+            <HeaderBottom/>
 
         </div>
     );
