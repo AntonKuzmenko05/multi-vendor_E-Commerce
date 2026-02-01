@@ -1,6 +1,9 @@
 "use client";
 import React, {useEffect, useState} from 'react';
-import {AlignLeft, ChevronDown} from "lucide-react";
+import {AlignLeft, ChevronDown, HeartIcon, ShoppingCart, User} from "lucide-react";
+import {navItems} from "../../config/constants";
+import {NavItemsTypes} from "../../config/global";
+import Link from "next/link";
 
 const HeaderBottom = () => {
     const [show, setShow] = useState(false)
@@ -8,14 +11,15 @@ const HeaderBottom = () => {
 
     useEffect(() => {
         const handleScroll = () => {
-            if (window.screenY > 100) {
+            if (window.scrollY > 100) {
                 setIsSticky(true)
             } else {
                 setIsSticky(false)
             }
+        }
             window.addEventListener('scroll', handleScroll)
             return () => window.removeEventListener('scroll', handleScroll)
-        }
+
     }, [])
 
     return (
@@ -41,7 +45,54 @@ const HeaderBottom = () => {
                         isSticky ? "top-[70px]":"top-[50px]"
                     } w-[260px] h-[400px] bg-[#f5f5f5]`}></div>
                 )}
+                {/*Navidations links*/}
+                <div className="flex items-center">
+                    {navItems.map((i:NavItemsTypes, index:number)=>(
+                        <Link href={i.href} key={index}
+                              className="px-5 font-medium text-lg">
+                            {i.title}
+                            </Link>
+                    ))}
+                </div>
+                <div>
+                    {isSticky && (
+                        <div className="flex items-center gap-8 pb-2">
+                            <div className="flex items-center gap-2">
+                                <Link href={"/login"}
+                                      className="border-2 w-[50px] h-[50px] flex items-center justify-center rounded-full border-[black]">
+                                    <User/>
+                                </Link>
 
+                                <Link href={"/login"}>
+                                    <span className="block font-medium opacity-[.6]">Hello, </span>
+                                    <span className="font-semibold">
+                            Sign in
+                        </span>
+                                </Link>
+                            </div>
+                            <div className="flex items-center gap-5">
+                                <Link href={"/wishlist"} className="relative ">
+                                    <HeartIcon/>
+                                    <div
+                                        className="w-6 h-6 border-2 border-white bg-red-500 rounded-full flex items-center justify-center absolute top-[-10px] right-[-10px]">
+                                <span className="text-white font-medium text-sm">
+                                    0
+                                </span>
+                                    </div>
+                                </Link>
+                                <Link href={"/wishlist"} className="relative ">
+                                    <ShoppingCart/>
+                                    <div
+                                        className="w-6 h-6 border-2 border-white bg-red-500 rounded-full flex items-center justify-center absolute top-[-10px] right-[-10px]">
+                                <span className="text-white font-medium text-sm">
+                                    0
+                                </span>
+                                    </div>
+                                </Link>
+                            </div>
+                        </div>
+                    )}
+                </div>
 
             </div>
         </div>
