@@ -78,7 +78,7 @@ const Login = () => {
                             <div className="relative">
                                 <input type={passwordVisible ? "text":"password"}
                                        placeholder="Min 6 characters"
-                                       className="w-full p-2 border border-gray-300 outline-0 rounded mb-1"
+                                       className="w-full p-2 border border-gray-300 outline-0 !rounded mb-1"
                                        {...register("password", {
                                            required:"Password is required",
                                            minLength:{
@@ -92,9 +92,37 @@ const Login = () => {
                                 className="absolute inset-y-0 right-3 flex items-center text-gray-400">
                                     {passwordVisible ? <Eye/> : <EyeOff/>}
                                 </button>
+                                {errors.password && (
+                                    <p className="text-red-600 text-sm">
+                                        {String(errors.password.message)}
+                                    </p>
+                                )}
+
+                                <div className="flex justify-between items-center my-4">
+                                    <label className="flex items-center text-gray-600">
+                                        <input
+                                            type="checkbox"
+                                            className="mr-2"
+                                            checked={rememberMe}
+                                            onChange={()=>setRememberMe(!rememberMe)}/>
+                                        Remember Me
+                                    </label>
+                                    <Link href={"/forgot-password"} className="text-blue-500 text-sm">
+                                        Forgot Password?
+                                    </Link>
+                                </div>
                             </div>
 
+                        <button
+                            type="submit"
+                            className="w-full text-lg cursor-pointer bg-black text-white py-2 rounded-lg"
 
+                        >
+                            Login
+                        </button>
+                        {serverError && (
+                            <p className="text-red-500 text-sm mt-2">{serverError}</p>
+                        )}
                     </form>
                 </div>
             </div>
