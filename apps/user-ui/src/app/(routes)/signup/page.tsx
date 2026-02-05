@@ -9,10 +9,11 @@ import {Eye, EyeOff} from "lucide-react";
 type FormData = {
     email:string,
     password:string,
+    name:string,
 }
 
 
-const Login = () => {
+const Signup = () => {
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [serverError, setServerError] = useState<string | null>(null);
     const [rememberMe, setRememberMe] = useState(false);
@@ -32,20 +33,20 @@ const Login = () => {
     return (
         <div className="w-full py-10 min-h-[85vh] bg-[#f1f1f1]">
             <h1 className="text-4xl font-Poppins font-semibold text-black text-center">
-                Login
+                Sign Up
             </h1>
             <p className="text-center text-lg font-medium py-3 text-[#00000099]">
-                Home . Login
+                Home . Sign Up
             </p>
             <div className="w-full flex justify-center">
                 <div className="md:w-[480px] p-8 bg-white shadow rounded-lg">
                     <h1 className="text-3xl font-semibold text-center mb-2">
-                        Login to Eshop
+                        Sign Up to Eshop
                     </h1>
                     <p className="text-center text-gray-500 mb-4">
-                        Dont have an account? {" "}
-                        <Link href={"/signup"} className="text-blue-500">
-                            Sign Up
+                        Have an account? {" "}
+                        <Link href={"/login"} className="text-blue-500">
+                            Login
                         </Link>
                     </p>
 
@@ -57,6 +58,20 @@ const Login = () => {
                     </div>
 
                     <form onSubmit={handleSubmit(onSubmit)}>
+
+                        <label className="block text-gray-700 mb-1">Name</label>
+                        <input type="text"
+                               placeholder="Wijab"
+                               className="w-full p-2 border border-gray-300 outline-0 !rounded mb-1"
+                               {...register("name", {
+                                   required: "Email is required",
+                               })}/>
+                        {errors.email && (
+                            <p className="text-red-00 text-sm">
+                                {String(errors.email.message)}
+                            </p>
+                        )}
+
                         <label className="block text-gray-700 mb-1">Email</label>
                         <input type="email"
                                placeholder="support@gmail.com"
@@ -68,50 +83,50 @@ const Login = () => {
                                        message: "Invalid email"
                                    }
                                })}/>
-                        {errors.email && (
+                        {errors.name && (
                             <p className="text-red-00 text-sm">
-                                {String(errors.email.message)}
+                                {String(errors.name.message)}
                             </p>
                         )}
 
                         <label className="block text-gray-700 mb-1">Password</label>
-                            <div className="relative">
-                                <input type={passwordVisible ? "text":"password"}
-                                       placeholder="Min 6 characters"
-                                       className="w-full p-2 border border-gray-300 outline-0 !rounded mb-1"
-                                       {...register("password", {
-                                           required:"Password is required",
-                                           minLength:{
-                                               value:6,
-                                               message: "Password must be at least 6 "
-                                           }
-                                       })}
-                                />
+                        <div className="relative">
+                            <input type={passwordVisible ? "text":"password"}
+                                   placeholder="Min 6 characters"
+                                   className="w-full p-2 border border-gray-300 outline-0 !rounded mb-1"
+                                   {...register("password", {
+                                       required:"Password is required",
+                                       minLength:{
+                                           value:6,
+                                           message: "Password must be at least 6 "
+                                       }
+                                   })}
+                            />
 
-                                <button type="button" onClick={()=>setPasswordVisible(!passwordVisible)}
-                                className="absolute inset-y-0 right-3 flex items-center text-gray-400">
-                                    {passwordVisible ? <Eye/> : <EyeOff/>}
-                                </button>
-                            </div>
-                                {errors.password && (
-                                    <p className="text-red-600 text-sm">
-                                        {String(errors.password.message)}
-                                    </p>
-                                )}
+                            <button type="button" onClick={()=>setPasswordVisible(!passwordVisible)}
+                                    className="absolute inset-y-0 right-3 flex items-center text-gray-400">
+                                {passwordVisible ? <Eye/> : <EyeOff/>}
+                            </button>
+                        </div>
+                        {errors.password && (
+                            <p className="text-red-600 text-sm">
+                                {String(errors.password.message)}
+                            </p>
+                        )}
 
-                                <div className="flex justify-between items-center my-4">
-                                    <label className="flex items-center text-gray-600">
-                                        <input
-                                            type="checkbox"
-                                            className="mr-2"
-                                            checked={rememberMe}
-                                            onChange={()=>setRememberMe(!rememberMe)}/>
-                                        Remember Me
-                                    </label>
-                                    <Link href={"/forgot-password"} className="text-blue-500 text-sm">
-                                        Forgot Password?
-                                    </Link>
-                                </div>
+                        <div className="flex justify-between items-center my-4">
+                            <label className="flex items-center text-gray-600">
+                                <input
+                                    type="checkbox"
+                                    className="mr-2"
+                                    checked={rememberMe}
+                                    onChange={()=>setRememberMe(!rememberMe)}/>
+                                Remember Me
+                            </label>
+                            <Link href={"/forgot-password"} className="text-blue-500 text-sm">
+                                Forgot Password?
+                            </Link>
+                        </div>
 
 
                         <button
@@ -119,7 +134,7 @@ const Login = () => {
                             className="w-full text-lg cursor-pointer bg-black text-white py-2 rounded-lg"
 
                         >
-                            Login
+                            Sign Up
                         </button>
                         {serverError && (
                             <p className="text-red-500 text-sm mt-2">{serverError}</p>
@@ -131,4 +146,4 @@ const Login = () => {
     );
 };
 
-export default Login;
+export default Signup;
