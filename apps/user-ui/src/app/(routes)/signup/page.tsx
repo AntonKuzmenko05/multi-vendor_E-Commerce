@@ -1,5 +1,5 @@
 'use client'
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import {useRouter} from "next/navigation";
 import {useForm} from "react-hook-form";
 import Link from "next/link";
@@ -16,7 +16,11 @@ type FormData = {
 const Signup = () => {
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [serverError, setServerError] = useState<string | null>(null);
-    const [rememberMe, setRememberMe] = useState(false);
+    const [canResend, setCanResend] = useState(true);
+    const [timer, setTimer] = useState(60);
+    const [otp, setOtp] = useState(["","","",""])
+    const [userData, setUserData] = useState<FormData | null>(null);
+    const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
     const router = useRouter()
 
@@ -64,11 +68,11 @@ const Signup = () => {
                                placeholder="Wijab"
                                className="w-full p-2 border border-gray-300 outline-0 !rounded mb-1"
                                {...register("name", {
-                                   required: "Email is required",
+                                   required: "Name is required",
                                })}/>
-                        {errors.email && (
+                        {errors.name && (
                             <p className="text-red-00 text-sm">
-                                {String(errors.email.message)}
+                                {String(errors.name.message)}
                             </p>
                         )}
 
@@ -83,9 +87,9 @@ const Signup = () => {
                                        message: "Invalid email"
                                    }
                                })}/>
-                        {errors.name && (
+                        {errors.email && (
                             <p className="text-red-00 text-sm">
-                                {String(errors.name.message)}
+                                {String(errors.email.message)}
                             </p>
                         )}
 
@@ -114,24 +118,10 @@ const Signup = () => {
                             </p>
                         )}
 
-                        <div className="flex justify-between items-center my-4">
-                            <label className="flex items-center text-gray-600">
-                                <input
-                                    type="checkbox"
-                                    className="mr-2"
-                                    checked={rememberMe}
-                                    onChange={()=>setRememberMe(!rememberMe)}/>
-                                Remember Me
-                            </label>
-                            <Link href={"/forgot-password"} className="text-blue-500 text-sm">
-                                Forgot Password?
-                            </Link>
-                        </div>
-
 
                         <button
                             type="submit"
-                            className="w-full text-lg cursor-pointer bg-black text-white py-2 rounded-lg"
+                            className="w-full text-lg cursor-pointer mt-4 bg-black text-white py-2 rounded-lg"
 
                         >
                             Sign Up
