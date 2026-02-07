@@ -5,6 +5,10 @@ import {useForm} from "react-hook-form";
 import Link from "next/link";
 import GoogleButton from "../../../shared/components/google-button";
 import {Eye, EyeOff} from "lucide-react";
+import {useMutation} from "@tanstack/react-query";
+import axios from "axios";
+import * as process from "node:process";
+import {setInterval} from "next/dist/compiled/@edge-runtime/primitives";
 
 type FormData = {
     email:string,
@@ -29,10 +33,45 @@ const Signup = () => {
         register,
         handleSubmit,
         formState: {errors},
-    } = useForm<FormData>()
+    } = useForm<FormData>();
+
+    const startResendTimer = () =>{
+        const interval = setInterval(()=>{
+            setTimer((prev)=>{
+                if (prev <= 1){
+                    clearInterval(interval)
+                    setCanResend(true);
+                    return 0
+                }
+                return prev-1
+            })
+        },1000)
+    }
+
+    const signupMutation = useMutation({
+        mutationFn: async (data:FormData) =>{
+            const response = await axios.post(`${process.env.NEXT_PUBLIC_SERVER_URI}/api/user-registration`,
+                data
+            )
+            return response.data
+        },
+        onSuccess:(_,formData)=>{
+            setUserData(formData)
+            setShowOtp(true);
+            setCanResend(false);
+            setTimer(60);
+            startResendTimer();
+        }
+    })
+
+    const verifyOtpMutation = useMutation({
+        mutationFn:async ()=>{
+
+        }
+    })
 
     const onSubmit = (data:FormData) =>{
-
+        signupMutation.mutate(data)
     }
     const handleOtpChange = (index:number, value:string) =>{
         if(!/^[0-9]?$/.test(value)) return;
@@ -145,9 +184,9 @@ const Signup = () => {
                             <button
                                 type="submit"
                                 className="w-full text-lg cursor-pointer mt-4 bg-black text-white py-2 rounded-lg"
-
+                                disabled={signupMutation.isPending}
                             >
-                                Sign Up
+                                {signupMutation.isPending ? "Sign Up ...." : "Sign Up"}
                             </button>
                             {serverError && (
                                 <p className="text-red-500 text-sm mt-2">{serverError}</p>
