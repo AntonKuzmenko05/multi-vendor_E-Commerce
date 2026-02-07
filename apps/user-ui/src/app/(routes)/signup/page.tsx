@@ -35,6 +35,24 @@ const Signup = () => {
 
     }
     const handleOtpChange = (index:number, value:string) =>{
+        if(!/^[0-9]?$/.test(value)) return;
+
+        const newOtp = [...otp];
+        newOtp[index] = value;
+        setOtp(newOtp);
+
+        if(value && index < inputRefs.current.length-1){
+            inputRefs.current[index+1]?.focus();
+        }
+    }
+
+    const handleOtpKeyDown = (index:number, e:React.KeyboardEvent<HTMLInputElement>)=>{
+        if (e.key === "Backspace" && !otp[index] && index>0){
+            inputRefs.current[index-1]?.focus()
+        }
+    }
+
+    const resendOtp = () =>{
 
     }
 
@@ -147,9 +165,24 @@ const Signup = () => {
                                     className="w-12 h-12 text-center border border-gray-300 outline-none !rounded"
                                            value={digit}
                                            onChange={e=>handleOtpChange(index, e.target.value)}
+                                            onKeyDown={(e)=>handleOtpKeyDown(index,e)}
                                     />
                                 ))}
                             </div>
+                            <button className="w-full mt-4 text-lg cursor-pointer bg-blue-500 text-white py-2 rounded-lg">
+                                Verify OTP
+                            </button>
+                            <p className="text-center text-sm mt-4">
+                                {canResend ? (
+                                    <button onClick={resendOtp}
+                                    className="text-blue-500 cursor-pointer">
+                                        Resend OTP
+                                    </button>
+                                ): (
+                                    `Resend OTP in ${timer} s `
+                                )}
+                            </p>
+                            {}
                         </div>
                     )}
                 </div>
