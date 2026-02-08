@@ -105,6 +105,9 @@ What i learned:
       - сценарії об'єдання
       - git pull --ff-only
       - ahead and behind situation
+- some next 
+- @tanstack/react-query
+- react-hook-form
 
 What want to add
 gRPC 
