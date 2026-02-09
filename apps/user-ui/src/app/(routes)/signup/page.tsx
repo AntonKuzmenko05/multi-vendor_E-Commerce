@@ -1,5 +1,5 @@
 'use client'
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {useRouter} from "next/navigation";
 import {useForm} from "react-hook-form";
 import Link from "next/link";
@@ -33,18 +33,40 @@ const Signup = () => {
         formState: {errors},
     } = useForm<FormData>();
 
-    const startResendTimer = () =>{
-        const interval = setInterval(()=>{
-            setTimer((prev)=>{
-                if (prev <= 1){
-                    clearInterval(interval)
+    const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+    // clear if unmount
+    useEffect(() => {
+        return () => {
+            if (timerRef.current) {
+                clearInterval(timerRef.current);
+            }
+        };
+    }, []);
+
+    const startResendTimer = () => {
+        // clear prev interval
+        if (timerRef.current) {
+            clearInterval(timerRef.current);
+        }
+
+        setTimer(60);
+        setCanResend(false);
+
+        timerRef.current = setInterval(() => {
+            setTimer((prev) => {
+                if (prev <= 1) {
+                    if (timerRef.current) {
+                        clearInterval(timerRef.current);
+                        timerRef.current = null;
+                    }
                     setCanResend(true);
-                    return 0
+                    return 0;
                 }
-                return prev-1
-            })
-        },1000)
-    }
+                return prev - 1;
+            });
+        }, 1000);
+    };
 
     const signupMutation = useMutation({
         mutationFn: async (data:FormData) =>{
@@ -56,8 +78,6 @@ const Signup = () => {
         onSuccess:(_,formData)=>{
             setUserData(formData)
             setShowOtp(true);
-            setCanResend(false);
-            setTimer(60);
             startResendTimer();
         }
     })
@@ -97,10 +117,11 @@ const Signup = () => {
             inputRefs.current[index-1]?.focus()
         }
     }
+    const resendOtp = () => {
+        if (!canResend || !userData) return;
 
-    const resendOtp = () =>{
-
-    }
+        signupMutation.mutate(userData);
+    };
 
     return (
         <div className="w-full py-10 min-h-[85vh] bg-[#f1f1f1]">
@@ -217,6 +238,18 @@ const Signup = () => {
                             onClick={()=>verifyOtpMutation.mutate()}>
                                 {verifyOtpMutation.isPending ? "Verifying..." : "Verify OTP"}
                             </button>
+
+                            {/*
+                            {verifyOtpMutation.isError && (
+    <button onClick={() => {
+        setOtp(["","","",""]);
+        inputRefs.current[0]?.focus();
+    }}>
+        Try Again
+    </button>
+)}
+                            */}
+
                             <p className="text-center text-sm mt-4">
                                 {canResend ? (
                                     <button onClick={resendOtp}
