@@ -1,9 +1,11 @@
 import {NextFunction, Request, Response} from "express";
 import {
-    checkOtpRestrictions, handleForgotPassword,
+    checkOtpRestrictions,
+    handleForgotPassword,
     sendOtp,
     trackOtpRequests,
-    validateRegistrationData, verifyForgotPasswordOtp,
+    validateRegistrationData,
+    verifyForgotPasswordOtp,
     verifyOtp
 } from "../utils/auth.helper";
 import prisma from "@packages/libs/prisma";
@@ -13,46 +15,36 @@ import jwt from "jsonwebtoken"
 import * as process from "node:process";
 import {setCookie} from "../utils/cookies/setCookie";
 
-//Register new user
+// Register new user
 export const userRegistration = async (
     req: Request,
     res: Response,
     next: NextFunction
 ) => {
     try {
-
         validateRegistrationData(req.body, "user")
         const {name, email} = req.body;
 
-        //Має бути:
-        //
-        // const existingUser = await prisma.users.findUnique({
-        //   where: { email }
-        // })
-        //
-        //
-        // Інакше Prisma теж кине помилку — і вона теж прилетить у errorMiddleware.
         const existingUser = await prisma.users.findUnique({where: {email}})
 
         if (existingUser) {
-            return next(new ValidationError("User already exists with this email!"))
+            throw new ValidationError("User already exists with this email!")
         }
 
 
-        await checkOtpRestrictions(email, next);
-        await trackOtpRequests(email, next);
+        await checkOtpRestrictions(email);
+        await trackOtpRequests(email);
         await sendOtp(email, name, "user-activation-mail");
 
         res.status(200).json({
             message: "OTP sent to your email. Please verify"
         })
-        //TODO add cookie
     } catch (e) {
         return next(e)
     }
 }
 
-//verify user via otp
+// Verify user via otp
 export const verifyUser = async (
     req: Request,
     res: Response,
@@ -62,16 +54,16 @@ export const verifyUser = async (
         const {email, otp, password, name} = req.body;
 
         if (!email || !otp || !password || !name) {
-            return next(new ValidationError("All fields are required!"))
+            throw new ValidationError("All fields are required!")
         }
 
         const existingUser = await prisma.users.findUnique({where: {email}});
 
         if (existingUser) {
-            return next(new ValidationError("User already exists with this email!"))
+            throw new ValidationError("User already exists with this email!")
         }
 
-        await verifyOtp(email, otp, next);
+        await verifyOtp(email, otp);
 
         const hashedPassword = await bcrypt.hash(password, 10)
 
@@ -98,31 +90,33 @@ export const loginUser = async (
         const {email, password} = req.body;
 
         if (!email || !password) {
-            return next(new ValidationError("Email and password are required!"))
+            throw new ValidationError("Email and password are required!")
         }
+
         const user = await prisma.users.findUnique({where: {email}})
 
-        if (!user) return next(new AuthError("User doesn't exists!"))
+        if (!user) throw new AuthError("User doesn't exist!")
 
-        //verify email
+        // Verify password
         const isPasswordMatch = await bcrypt.compare(password, user.password!)
         if (!isPasswordMatch) {
-            return next(new AuthError("Invalid password or email"))
+            throw new AuthError("Invalid password or email")
         }
 
-        //Generate access and refresh token
-        const accessToken = jwt.sign({id: user.id, role: "user"}, process.env.ACCESS_TOKET_SECRET as string,
-            {
-                expiresIn: "15m"
-            }
+        // Generate access and refresh token
+        const accessToken = jwt.sign(
+            {id: user.id, role: "user"},
+            process.env.ACCESS_TOKEN_SECRET as string,
+            {expiresIn: "15m"}
         )
 
-        const refreshToken = jwt.sign({id: user.id, role: "user"}, process.env.REFRESH_TOKET_SECRET as string,
-            {
-                expiresIn: "7d"
-            }
+        const refreshToken = jwt.sign(
+            {id: user.id, role: "user"},
+            process.env.REFRESH_TOKEN_SECRET as string,
+            {expiresIn: "7d"}
         )
-        //store tokens
+
+        // Store tokens
         setCookie(res, "refresh_token", refreshToken);
         setCookie(res, "access_token", accessToken);
 
@@ -136,18 +130,16 @@ export const loginUser = async (
     }
 }
 
-//user forgot password
+// User forgot password
 export const userForgotPassword = async (
     req: Request,
     res: Response,
     next: NextFunction
 ) => {
     await handleForgotPassword(req, res, next, "user");
-
 }
 
-
-//Reset user password
+// Reset user password
 export const resetUserPassword = async (
     req: Request,
     res: Response,
@@ -157,19 +149,19 @@ export const resetUserPassword = async (
         const {email, newPassword} = req.body;
 
         if (!email || !newPassword)
-            return next(new ValidationError("Email and password are required!"))
+            throw new ValidationError("Email and password are required!")
 
         const user = await prisma.users.findUnique({where: {email}})
 
-        if (!user) return next(new AuthError("User doesn't exists!"))
+        if (!user) throw new AuthError("User doesn't exist!")
 
-        //compare new password with the existing one
+        // Compare new password with the existing one
         const isSamePassword = await bcrypt.compare(newPassword, user.password!);
 
         if (isSamePassword)
-            return next(new ValidationError("New password cannot be the same as the old password"))
+            throw new ValidationError("New password cannot be the same as the old password")
 
-        //hash the new password
+        // Hash the new password
         const hashedPassword = await bcrypt.hash(newPassword, 10);
 
         await prisma.users.update({
