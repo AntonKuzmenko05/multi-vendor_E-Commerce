@@ -161,7 +161,7 @@ const Signup = () => {
                                        required: "Name is required",
                                    })}/>
                             {errors.name && (
-                                <p className="text-red-00 text-sm">
+                                <p className="text-red-500 text-sm">
                                     {String(errors.name.message)}
                                 </p>
                             )}
@@ -178,7 +178,7 @@ const Signup = () => {
                                        }
                                    })}/>
                             {errors.email && (
-                                <p className="text-red-00 text-sm">
+                                <p className="text-red-500 text-sm">
                                     {String(errors.email.message)}
                                 </p>
                             )}
@@ -219,6 +219,7 @@ const Signup = () => {
                         </form>
                     ) : (
                         <div>
+                            //TODO paste OTP
                             <h3 className="text-xl font-semibold text-center mb-4">Enter OTP</h3>
                             <div className="flex justify-center gap-6 ">
                                 {otp?.map((digit, index)=>(

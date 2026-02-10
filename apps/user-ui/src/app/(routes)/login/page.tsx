@@ -7,7 +7,6 @@ import GoogleButton from "../../../shared/components/google-button";
 import {Eye, EyeOff} from "lucide-react";
 import {useMutation} from "@tanstack/react-query";
 import axios, {AxiosError} from "axios";
-import * as process from "node:process";
 
 type FormData = {
     email:string,
@@ -90,7 +89,7 @@ const Login = () => {
                                    }
                                })}/>
                         {errors.email && (
-                            <p className="text-red-00 text-sm">
+                            <p className="text-red-500 text-sm">
                                 {String(errors.email.message)}
                             </p>
                         )}
