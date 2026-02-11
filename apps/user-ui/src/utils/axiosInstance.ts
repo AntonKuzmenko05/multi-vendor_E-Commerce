@@ -4,7 +4,7 @@ import * as process from "node:process";
 
 
 const axiosInstance = axios.create({
-    baseURL: process.env["NEXT_PUBLIC_SERVER_URI "],
+    baseURL: process.env["NEXT_PUBLIC_SERVER_URI"],
     withCredentials: true,
 })
 
