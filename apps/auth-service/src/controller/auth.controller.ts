@@ -11,7 +11,7 @@ import {
 import prisma from "@packages/libs/prisma";
 import bcrypt from "bcryptjs"
 import {AuthError, ValidationError} from "@packages/erorr-handler";
-import jwt from "jsonwebtoken"
+import jwt, {JsonWebTokenError} from "jsonwebtoken"
 import * as process from "node:process";
 import {setCookie} from "../utils/cookies/setCookie";
 
@@ -117,13 +117,76 @@ export const loginUser = async (
         )
 
         // Store tokens
-        setCookie(res, "refresh_token", refreshToken);
-        setCookie(res, "access_token", accessToken);
+        setCookie(res, "refresh_token", refreshToken, "7d");
+        setCookie(res, "access_token", accessToken, "15m");
 
         res.json({
             message: "Login successful!",
             user: {id: user.id, email: user.email, name: user.name}
         });
+
+    } catch (e) {
+        return next(e)
+    }
+}
+
+export const refreshToken = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const refreshToken = req.cookies.refresh_token
+
+        if (!refreshToken){
+            throw new ValidationError("Unauthorized! Np refresh token")
+        }
+
+        const decoded = jwt.verify(
+            refreshToken,
+            process.env.REFRESH_TOKET_SECRET as string
+        ) as {id: string , role: string}
+
+        if(!decoded || !decoded.id || !decoded.role){
+            throw new JsonWebTokenError("Forbidden! Invalid refresh  token")
+        }
+        //
+        // let account;
+        // if(decoded.role === "user")
+         const user = await prisma.users.findUnique({where: {id: decoded.id}})
+
+        if(!user) throw new AuthError("Forbidden! User/Seller not found")
+
+        const newAccessToken = jwt.sign(
+            {id:decoded.id, role: decoded.role},
+            process.env.ACCESS_TOKET_SECRET as string,
+            {expiresIn: "15m" }
+        )
+
+        setCookie(res, "access_token", newAccessToken, "15m")
+
+        return res.status(201).json({
+            success:true,
+
+        })
+
+    } catch (e) {
+        return next(e)
+    }
+}
+
+//get logged in user
+export const getUser = async (
+    req: any,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const user = req.user;
+        res.status(201).json({
+            success:true,
+            user
+        })
 
     } catch (e) {
         return next(e)
